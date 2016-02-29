@@ -28,13 +28,14 @@ fi
 ping -c $ping_count -i $ping_interval $IP_MASTER
 if [ ! $? -eq 0 ]; then
     ping -c $ping_count_fail -i $ping_interval_fail $IP_MASTER
+    if [ ! $? -eq 0 ]; then 
+	ping -c $ping_count -i $ping_interval $IP_SLAVE
 	if [ ! $? -eq 0 ]; then 
-		ping -c $ping_count -i $ping_interval $IP_SLAVE
-		if [ ! $? -eq 0 ]; then 
-			xivo-service start
-			echo "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, les ip ${IP_MASTER} ET ${IP_SLAVE} sont peut etre down ?" | mail test infrastructure@whoople.fr
-		fi
+	    xivo-service start
+	    #mutt -s "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, les ip ${IP_MASTER} ET ${IP_SLAVE} sont peut etre down ?" infrastructure@servitics.fr
+	    echo "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, les ip ${IP_MASTER} ET ${IP_SLAVE} sont peut etre down ?" | mail test infrastructure@servitics.fr
 	fi
+    fi
 else
     xivo-service stop
 fi

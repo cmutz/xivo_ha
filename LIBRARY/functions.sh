@@ -31,9 +31,9 @@ verification_access_ping() {
     println info "\t\nvérification de l'accessibilité du serveur"
     ${PATCH_PING} -c1 $* > /dev/null
     if [ $? != 0 ] ; then
-	return 2
+    return 2
     else 
-	return 0
+    return 0
     fi
        
 }
@@ -43,10 +43,10 @@ generate_pair_authentication_keys() {
 
     println info "\t\n Creation de la pair ssh sur le serveur local\n"
     if [ ! -f /root/.ssh/id_rsa.pub ]; then
-	${PATCH_KEYGEN} -t rsa -f /$1/.ssh/id_rsa -N ""
+    ${PATCH_KEYGEN} -t rsa -f /$1/.ssh/id_rsa -N ""
     else 
-	println warn "\t\n/$1/.ssh/id_rsa.pub exist"
-	println warn "\t\n Utilisation de la pair de clé /$1/.ssh/id_rsa"
+    println warn "\t\n/$1/.ssh/id_rsa.pub exist"
+    println warn "\t\n Utilisation de la pair de clé /$1/.ssh/id_rsa"
     fi
     println warn "\t\n------------> WARNING !!!! <------------ \n"
     println warn "\t\n------------> ETES VOUS PRET A RENTRER LE MOT DE PASSE de l'utilisateur $1 (presser entrer) <------------ \n"; read
@@ -157,4 +157,3 @@ f_WARNING() {
     echo "$@"
     f_LOG "WARNING: $@"
 }
-
