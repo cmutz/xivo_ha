@@ -1,10 +1,10 @@
 #!/bin/bash
 #########################################
 # Original script by Clément
-# # Copyright (c) 2013, Clément Mutz <c.mutz@servitics.fr>
+# # Copyright (c) 2013, Clément Mutz <c.mutz@whoople.fr>
 # #########################################
 # # Modified by Clément Mutz
-# # Contact at c.mutz@servitics.fr 
+# # Contact at c.mutz@whoople.fr 
 
 #================== Globals ==================================================
 IP_MASTER=IP
@@ -34,7 +34,7 @@ if [ ! $? -eq 0 ]; then
 		ssh root@${IP_MASTER} "pidof asterisk"
 		if [ ! $? -eq 0 ]; then 
 			xivo-service start
-			mutt -s "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, car le processus est peut etre down ?" infrastructure@servitics.fr
+			mutt -s "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, car le processus est peut etre down ?" infrastructure@whoople.fr
 		fi
 	fi
 else

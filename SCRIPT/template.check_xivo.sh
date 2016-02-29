@@ -1,10 +1,10 @@
 #!/bin/bash
 #########################################
 # Original script by Clément
-# # Copyright (c) 2013, Clément Mutz <c.mutz@servitics.fr>
+# # Copyright (c) 2013, Clément Mutz <c.mutz@whoople.fr>
 # #########################################
 # # Modified by Clément Mutz
-# # Contact at c.mutz@servitics.fr 
+# # Contact at c.mutz@whoople.fr 
 
 #================== Globals ==================================================
 IP_MASTER=IP
@@ -32,8 +32,7 @@ if [ ! $? -eq 0 ]; then
 		ping -c $ping_count -i $ping_interval $IP_SLAVE
 		if [ ! $? -eq 0 ]; then 
 			xivo-service start
-			#mutt -s "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, les ip ${IP_MASTER} ET ${IP_SLAVE} sont peut etre down ?" infrastructure@servitics.fr
-			echo "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, les ip ${IP_MASTER} ET ${IP_SLAVE} sont peut etre down ?" | mail test infrastructure@servitics.fr
+			echo "Le xivo cloud a effectue un xivo-service start le `date +%Y-%m-%d-%H:%M:%S`, les ip ${IP_MASTER} ET ${IP_SLAVE} sont peut etre down ?" | mail test infrastructure@whoople.fr
 		fi
 	fi
 else
