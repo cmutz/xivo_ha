@@ -3,7 +3,7 @@
 Pour palier au manque de fonctionnalitées haute disponibilité pour la solution xivo,
 script essaye de combler ce besoin.
 
- # UTILISATION 
+### UTILISATION 
 
 # 2015-01-04: New maintainer found (jeansch), thanks to David Wilson for all the past work !
 
