@@ -1,4 +1,4 @@
-#!/bin/bash
+o#!/bin/bash
 #########################################
 # Original script by Clément
 # # Copyright (c) 2013, Clément Mutz <c.mutz@whoople.fr>
@@ -75,9 +75,9 @@ if [ $ETAT_SSH = "OK" ]; then
     println ras "\n\t-------> Auto connection ssh OK <-------" 
 else
     println error "\n\t-------> Auto connection ssh KO <-------\n\tBesoin d'utiliser paire de clé ssh"
-	if ask_yn_question "\n\tVoulez-vous creer ou utiliser une paire de clé ssh avec l'application ssh-keygen ?"; then generate_pair_authentication_keys $USER $IP_XIVO_SLAVE
-	else println error "\t\n It's not the end of the world but you must generate pair of authentication keys to finish installation"
-	fi
+    if ask_yn_question "\n\tVoulez-vous creer ou utiliser une paire de clé ssh avec l'application ssh-keygen ?"; then generate_pair_authentication_keys $USER $IP_XIVO_SLAVE
+    else println error "\t\n It's not the end of the world but you must generate pair of authentication keys to finish installation"
+    fi
 fi
 sleep 0.5
 #===============================================================
@@ -134,7 +134,7 @@ ${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE " cat > /etc/logrotate.d/xivo-backup << EOF
         nocreate
 }
 /var/backups/xivo/db-ha-xivo.tgz {
-	daily
+    daily
         rotate 7
         nocompress
         create 640 root www-data
