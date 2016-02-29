@@ -21,13 +21,13 @@ fi
 ping -c $ping_count -i $ping_interval $IP_MASTER
 ssh root@${IP_MASTER} "pidof asterisk"
 if [ ! $? -eq 0 ]; then
-	echo -e "\t\n le procesus Asterisk n'a pas l'air de réagir. Retry dans 30s ....\n"
+	echo -e "\t\n le procesus Asterisk n'a pas l'air de réagir. On recommence dans 30s ....\n"
 	sleep 15
 	echo -e "\t Retry dans 15s\n"
 	sleep 15
 	ssh root@${IP_MASTER} "pidof asterisk"
 	if [ ! $? -eq 0 ]; then 
-		echo -e "\t\n le procesus Asterisk n'a pas l'air de réagir. Retry dans 30s ....\n"
+		echo -e "\t\n le procesus Asterisk n'a pas l'air de réagir. On recommence dans 30s ....\n"
   		sleep 15
         	echo -e "\t Retry dans 15s\n"
         	sleep 15

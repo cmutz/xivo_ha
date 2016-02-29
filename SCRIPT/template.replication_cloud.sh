@@ -28,16 +28,8 @@ IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"
 $PATCH_XIVO_BACKUP db ${PATCH_FOLDER_BACKUP}db-${NAME_BACKUP}
 $PATCH_XIVO_BACKUP data ${PATCH_FOLDER_BACKUP}data-${NAME_BACKUP}
 
-#$PATCH_TAR xvf ${PATCH_FOLDER_BACKUP}db-${NAME_BACKUP}.tgz -C ${PATCH_TMP}
-
-#$PATCH_TAR zxvfp ${PATCH_FOLDER_BACKUP}data-${NAME_BACKUP}.tgz -C ${PATCH_DATA}
-
 ${PATCH_SCP} -P ${PORT_SSH} ${PATCH_FOLDER_BACKUP}db-${NAME_BACKUP}.tgz ${USER}@$IP_XIVO_SLAVE:${PATCH_FOLDER_BACKUP}
 ${PATCH_SCP} -P ${PORT_SSH} ${PATCH_FOLDER_BACKUP}data-${NAME_BACKUP}.tgz ${USER}@$IP_XIVO_SLAVE:${PATCH_FOLDER_BACKUP}
-
-#$PATCH_RSYNC -e "ssh -p${PORT_SSH}" -avz --delete-after ${PATCH_TMP}pg-backup $USER@$IP_XIVO_SLAVE:${PATCH_TMP}/
-#$PATCH_RSYNC -e "ssh -p${PORT_SSH}" -avz --exclude 'data_xivo/etc/network/interfaces' --exclude 'data_xivo/etc/resolv.conf' --exclude 'data_xivo/etc/hosts' --exclude 'data_xivo/etc/hostname'  --delete-after ${PATCH_DATA} $USER@$IP_XIVO_SLAVE:${PATCH_TMP}/
-
 
 #================== Unset globals =============================================
 unset PATCH_SSH
