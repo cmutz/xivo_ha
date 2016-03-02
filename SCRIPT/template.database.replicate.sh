@@ -52,7 +52,7 @@ sudo -u postgres pg_restore -C -d postgres asterisk-*.dump
 
 #================== clean directory ===========================================
 
-cp /etc/network/interfaces.script.ha /etc/netxwork/interfaces
+cp /etc/network/interfaces.script.ha /etc/network/interfaces
 cp /etc/hosts.script.ha /etc/hosts
 cp /etc/hostname.script.ha /etc/hostname
 #rm -rf /tmp/pg-backup
