@@ -118,24 +118,24 @@ sleep 0.5
 #sleep 0.5
 
 #${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "mv /etc/logrotate.d/xivo-backup /etc/logrotate.d/xivo-backup.old.script"
-sleep 0.5
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE " cat > /etc/logrotate.d/xivo-backup << EOF
-/var/backups/xivo/data-ha-xivo.tgz {
-        daily
-        rotate 7
-        nocompress
-        create 640 root www-data
-        nocreate
-}
-/var/backups/xivo/db-ha-xivo.tgz {
-    daily
-        rotate 7
-        nocompress
-        create 640 root www-data
-        nocreate
-}
-EOF
-"
+#sleep 0.5
+#${PATH_SSH} ${USER}@$IP_XIVO_SLAVE " cat > /etc/logrotate.d/xivo-backup << EOF
+#/var/backups/xivo/data-ha-xivo.tgz {
+#        daily
+#        rotate 7
+#        nocompress
+#        create 640 root www-data
+#        nocreate
+#}
+#/var/backups/xivo/db-ha-xivo.tgz {
+#    daily
+#        rotate 7
+#        nocompress
+#        create 640 root www-data
+#        nocreate
+#}
+#EOF
+#"
 sleep 0.5
 
 
