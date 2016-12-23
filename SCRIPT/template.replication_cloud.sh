@@ -11,10 +11,10 @@
 #PATCH_SCP="/usr/bin/scp"
 #PATCH_MKDIR="/bin/mkdir"
 #PATCH_TMP="/tmp/"
-PATCH_RSYNC="/usr/bin/rsync"
+PATH_RSYNC="/usr/bin/rsync"
 #PATCH_TAR="/bin/tar"
 #PATCH_XIVO_BACKUP="/usr/sbin/xivo-backup"
-PATCH_FOLDER_BACKUP="/var/backups/xivo/"
+PATH_FOLDER_BACKUP="/var/backups/xivo/"
 #PATCH_DATA="${PATCH_TMP}data_xivo"
 PORT_SSH="22" # by default
 USER="root" # we use user root by default 
@@ -25,7 +25,7 @@ IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"
 #[ ! -d ${PATCH_DATA} ] && ${PATCH_MKDIR} -p ${PATCH_DATA}
 
 #================ Main =========================================
-$PATH_RSYNC -av --rsh="ssh -p${PORT_SSH}" ${PATCH_FOLDER_BACKUP} ${USER}@$IP_XIVO_SLAVE:${PATCH_FOLDER_BACKUP}
+$PATH_RSYNC -av --rsh="ssh -p${PORT_SSH}" ${PATH_FOLDER_BACKUP} ${USER}@$IP_XIVO_SLAVE:${PATH_FOLDER_BACKUP}
 #$PATCH_XIVO_BACKUP db ${PATCH_FOLDER_BACKUP}db-${NAME_BACKUP}
 #$PATCH_XIVO_BACKUP data ${PATCH_FOLDER_BACKUP}data-${NAME_BACKUP}
 
