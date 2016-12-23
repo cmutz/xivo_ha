@@ -83,7 +83,6 @@ println info " \n\tL'installation de la réplication va démarrer"
 
 #[ ! -d /opt/backup-ha-xivo/ ] && ${PATH_MKDIR} -p /opt/backup-ha-xivo/
 [ ! -d /etc/xivo_ha/ ] && ${PATH_MKDIR} -p /etc/xivo_ha/
-touch /etc/cron.d/xivo_ha
 
 ${PATH_CP} -v ${PATH_SCRIPT}template.replication_cloud.sh /etc/xivo_ha/replication_cloud.sh
 sed -iv s/'^IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"'/'IP_XIVO_SLAVE='"$IP_XIVO_SLAVE"''/ /etc/xivo_ha/replication_cloud.sh
@@ -104,16 +103,13 @@ sleep 0.5
 ${PATH_SCP} ${PATH_SCRIPT}template.pidof_asterisk.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/pidof_asterisk.sh
 sleep 0.5
 
-grep 'bash /etc/xivo_ha/replication_cloud.sh' /etc/cron.d/xivo_ha
-if [[ $? == 1 ]];then echo '30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh' >> /etc/cron.d/xivo_ha; fi
+echo "30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh" >> /etc/cron.d/xivo_ha 
 sleep 0.5
 
-${PATH_SSH} ${USER}@${IP_XIVO_SLAVE} "grep 'bash /etc/xivo_ha/check_xivo.sh' /etc/cron.d/xivo_ha"
-if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/cron.d/xivo_ha"; fi
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/cron.d/xivo_ha"
 sleep 0.5
 
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /etc/xivo_ha/database.replicate.sh' /etc/cron.d/xivo_ha" 
-if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/cron.d/xivo_ha"; fi
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/cron.d/xivo_ha"
 sleep 0.5
 
 #${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /opt/backup-ha-xivo/pidof_asterisk.sh' /etc/crontab" 
