@@ -62,15 +62,15 @@ println info "\n\t Veuillez renseigner l'ip PUBLIC du serveur SLAVE : "; read IP
 
 ! f_isIPv4 $IP_XIVO_SLAVE && println error "\n\t-------> ADDRESS KO <-------" && exit 1 || println warn "\n\t-------> ADDRESS OK <-------"  
 
-! vf_erification_access_ping $IP_XIVO_SLAVE && println error "\n\t-------> PING KO <-------" && exit 1 || println warn "\n\t-------> PING OK <-------"
+! f_verification_access_ping $IP_XIVO_SLAVE && println error "\n\t-------> PING KO <-------" && exit 1 || println warn "\n\t-------> PING OK <-------"
 sleep 0.5
 
-verification_connexion_ssh $USER $IP_XIVO_SLAVE
+f_verification_connexion_ssh $USER $IP_XIVO_SLAVE $PORT_SSH
 if [ $ETAT_SSH = "OK" ]; then 
     println ras "\n\t-------> Auto connection ssh OK <-------" 
 else
     println error "\n\t-------> Auto connection ssh KO <-------\n\tBesoin d'utiliser paire de clé ssh"
-    if ask_yn_question "\n\tVoulez-vous creer ou utiliser une paire de clé ssh avec l'application ssh-keygen ?"; then f_generate_pair_authentication_keys $USER $IP_XIVO_SLAVE
+    if f_ask_yn_question "\n\tVoulez-vous creer ou utiliser une paire de clé ssh avec l'application ssh-keygen ?"; then f_generate_pair_authentication_keys $USER $IP_XIVO_SLAVE $PORT_SSH
     else println error "\t\n It's not the end of the world but you must generate pair of authentication keys to finish installation"
     fi
 fi
@@ -83,6 +83,7 @@ println info " \n\tL'installation de la réplication va démarrer"
 
 #[ ! -d /opt/backup-ha-xivo/ ] && ${PATH_MKDIR} -p /opt/backup-ha-xivo/
 [ ! -d /etc/xivo_ha/ ] && ${PATH_MKDIR} -p /etc/xivo_ha/
+[ ! -f /etc/cron.d/xivo_ha ] && touch /etc/cron.d/xivo_ha
 
 ${PATH_CP} -v ${PATH_SCRIPT}template.replication_cloud.sh /etc/xivo_ha/replication_cloud.sh
 sed -iv s/'^IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"'/'IP_XIVO_SLAVE='"$IP_XIVO_SLAVE"''/ /etc/xivo_ha/replication_cloud.sh
@@ -104,15 +105,15 @@ ${PATH_SCP} ${PATH_SCRIPT}template.pidof_asterisk.sh ${USER}@$IP_XIVO_SLAVE:/etc
 sleep 0.5
 
 grep 'bash /etc/xivo_ha/replication_cloud.sh' /etc/cron.d/xivo_ha
-if [[ $? == 1 ]];then echo '30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh' >> /etc/conf.d/xivo_ha; fi
+if [[ $? == 1 ]];then echo '30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh' >> /etc/cron.d/xivo_ha; fi
 sleep 0.5
 
-${PATH_SSH} ${USER}@${IP_XIVO_SLAVE} "grep 'bash /etc/xivo_ha/check_xivo.sh' /etc/conf.d/xivo_ha"
-if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/conf.d/xivo_ha"; fi
+${PATH_SSH} ${USER}@${IP_XIVO_SLAVE} "grep 'bash /etc/xivo_ha/check_xivo.sh' /etc/cron.d/xivo_ha"
+if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/cron.d/xivo_ha"; fi
 sleep 0.5
 
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /etc/xivo_ha/database.replicate.sh' /etc/conf.d/xivo_ha" 
-if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/conf.d/xivo_ha"; fi
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /etc/xivo_ha/database.replicate.sh' /etc/cron.d/xivo_ha" 
+if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/cron.d/xivo_ha"; fi
 sleep 0.5
 
 #${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /opt/backup-ha-xivo/pidof_asterisk.sh' /etc/crontab" 
