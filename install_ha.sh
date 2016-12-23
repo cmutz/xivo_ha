@@ -1,4 +1,4 @@
-o#!/bin/bash
+#!/bin/bash
 #########################################
 # Original script by Clément
 # # Copyright (c) 2016, Clément Mutz <c.mutz@whoople.fr>
@@ -36,15 +36,15 @@ rsync -av $PATH_LIBRARY etc/xivo_ha/
 #===============================================================
 println info " \n\tVérification des pré requis necessaire au bon fonctionnement du script\n"
 
-check_soft $PATH_BASH
-check_soft $PATH_CP
-check_soft $PATH_PING
-check_soft $PATH_MKDIR
-check_soft $PATH_SSH
-check_soft $PATH_KEYGEN
-check_soft $PATH_SSH_COPY_ID
-check_soft $PATH_SCP
-check_soft $PATH_EXPECT
+f_check_soft $PATH_BASH
+f_check_soft $PATH_CP
+f_check_soft $PATH_PING
+f_check_soft $PATH_MKDIR
+f_check_soft $PATH_SSH
+f_check_soft $PATH_KEYGEN
+f_check_soft $PATH_SSH_COPY_ID
+f_check_soft $PATH_SCP
+f_check_soft $PATH_EXPECT
 
 if [[ $check_soft = "KO" ]] ;then
         println error "\n\t-------> L'une des dépendences n'est pas respecté : Solutions pour y remédier : <-------"
@@ -60,9 +60,9 @@ println info "\n\t Veuillez renseigner l'IP PUBLIC du serveur CLOUD : "; read IP
 println info "\n\t Veuillez renseigner l'ip PUBLIC du serveur MASTER : "; read IP_MASTER
 println info "\n\t Veuillez renseigner l'ip PUBLIC du serveur SLAVE : "; read IP_SLAVE
 
-! isIPv4 $IP_XIVO_SLAVE && println error "\n\t-------> ADDRESS KO <-------" && exit 1 || println warn "\n\t-------> ADDRESS OK <-------"  
+! f_isIPv4 $IP_XIVO_SLAVE && println error "\n\t-------> ADDRESS KO <-------" && exit 1 || println warn "\n\t-------> ADDRESS OK <-------"  
 
-! verification_access_ping $IP_XIVO_SLAVE && println error "\n\t-------> PING KO <-------" && exit 1 || println warn "\n\t-------> PING OK <-------"
+! vf_erification_access_ping $IP_XIVO_SLAVE && println error "\n\t-------> PING KO <-------" && exit 1 || println warn "\n\t-------> PING OK <-------"
 sleep 0.5
 
 verification_connexion_ssh $USER $IP_XIVO_SLAVE
@@ -70,7 +70,7 @@ if [ $ETAT_SSH = "OK" ]; then
     println ras "\n\t-------> Auto connection ssh OK <-------" 
 else
     println error "\n\t-------> Auto connection ssh KO <-------\n\tBesoin d'utiliser paire de clé ssh"
-    if ask_yn_question "\n\tVoulez-vous creer ou utiliser une paire de clé ssh avec l'application ssh-keygen ?"; then generate_pair_authentication_keys $USER $IP_XIVO_SLAVE
+    if ask_yn_question "\n\tVoulez-vous creer ou utiliser une paire de clé ssh avec l'application ssh-keygen ?"; then f_generate_pair_authentication_keys $USER $IP_XIVO_SLAVE
     else println error "\t\n It's not the end of the world but you must generate pair of authentication keys to finish installation"
     fi
 fi
