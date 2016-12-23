@@ -1,55 +1,50 @@
 o#!/bin/bash
 #########################################
 # Original script by Clément
-# # Copyright (c) 2013, Clément Mutz <c.mutz@whoople.fr>
+# # Copyright (c) 2016, Clément Mutz <c.mutz@whoople.fr>
 # #########################################
 # # Modified by Clément Mutz
 # # Contact at c.mutz@whoople.fr 
 
+
+
+# changement de repertoire courant !
+cd "$(dirname "$0")"
+
+
+
 #================== Globals ==================================================
-PATCH_BASH="/bin/bash"
-PATCH_CP="/bin/cp"
-PATCH_LIBRARY="LIBRARY"
-PATCH_PING="/bin/ping"
-PATCH_MKDIR="/bin/mkdir"
-IP_XIVO_SLAVE=""
-ETAT_PING="KO"
-USER="root" # we use user root by default 
-PATCH_TMP="/tmp/"
-PATCH_SSH="/usr/bin/ssh"
-NAME_SCRIPT="scan-password-test.sh"
-ETAT_SSH="KO"
-PATCH_KEYGEN="/usr/bin/ssh-keygen"
-PATCH_SSH_COPY_ID="/usr/bin/ssh-copy-id"
-PATCH_SCP="/usr/bin/scp"
-PORT_SSH="22" # by default
-PATCH_FOLDER_BACKUP="/var/backups/xivo/"
-NAME_BACKUP="ha-xivo"
-PATCH_SCRIPT="SCRIPT/"
-PATCH_EXPECT="/usr/bin/expect"
+. global_install.sh
+source global_install.sh
+
 
 
 #================== Functions ================================================
-. $PATCH_LIBRARY/functions.sh
+if [[ ! -d $PATH_LIBRARY ]]
+then
+        git clone https://github.com/cmutz/fonction_perso_bash LIBRARY
+else
+        rm -r $PATH_LIBRARY && git clone https://github.com/cmutz/fonction_perso_bash LIBRARY
+fi
+. $PATH_LIBRARY/functions.sh
+rsync -av $PATH_LIBRARY etc/xivo_ha/
 
-#================ you must execute root user =================================
-[ `whoami`  != "root" ] && println error "This script need to be launched as root." && exit 1
+
 
 #===============================================================
 #================ Verify pre-requisites ========================
 #===============================================================
-
 println info " \n\tVérification des pré requis necessaire au bon fonctionnement du script\n"
 
-check_soft $PATCH_BASH
-check_soft $PATCH_CP
-check_soft $PATCH_PING
-check_soft $PATCH_MKDIR
-check_soft $PATCH_SSH
-check_soft $PATCH_KEYGEN
-check_soft $PATCH_SSH_COPY_ID
-check_soft $PATCH_SCP
-check_soft $PATCH_EXPECT
+check_soft $PATH_BASH
+check_soft $PATH_CP
+check_soft $PATH_PING
+check_soft $PATH_MKDIR
+check_soft $PATH_SSH
+check_soft $PATH_KEYGEN
+check_soft $PATH_SSH_COPY_ID
+check_soft $PATH_SCP
+check_soft $PATH_EXPECT
 
 if [[ $check_soft = "KO" ]] ;then
         println error "\n\t-------> L'une des dépendences n'est pas respecté : Solutions pour y remédier : <-------"
@@ -86,36 +81,37 @@ sleep 0.5
 println info " \n\tLa connection ssh des serveurs est assuré"
 println info " \n\tL'installation de la réplication va démarrer"
 
-[ ! -d /opt/backup-ha-xivo/ ] && ${PATCH_MKDIR} -p /opt/backup-ha-xivo/
+[ ! -d /opt/backup-ha-xivo/ ] && ${PATH_MKDIR} -p /opt/backup-ha-xivo/
+[ ! -d /etc/xivo_ha/ ] && ${PATH_MKDIR} -p /etc/xivo_ha/
 
-${PATCH_CP} -v ${PATCH_SCRIPT}template.replication_cloud.sh /opt/backup-ha-xivo/replication_cloud.sh
-sed -iv s/'^IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"'/'IP_XIVO_SLAVE='"$IP_XIVO_SLAVE"''/ /opt/backup-ha-xivo/replication_cloud.sh
+${PATH_CP} -v ${PATH_SCRIPT}template.replication_cloud.sh /etc/xivo_ha/replication_cloud.sh
+sed -iv s/'^IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"'/'IP_XIVO_SLAVE='"$IP_XIVO_SLAVE"''/ /etc/xivo_ha/replication_cloud.sh
 sleep 0.5
 
-${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE ${PATCH_MKDIR} -p /opt/backup-ha-xivo/
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE ${PATH_MKDIR} -p /opt/backup-ha-xivo/
 sleep 0.5
 
-${PATCH_SCP} ${PATCH_SCRIPT}template.check_xivo.sh ${USER}@$IP_XIVO_SLAVE:/opt/backup-ha-xivo/check_xivo.sh
-${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_MASTER=IP'/'IP_MASTER='$IP_MASTER''/ /opt/backup-ha-xivo/check_xivo.sh
-${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_SLAVE=IP'/'IP_SLAVE='$IP_SLAVE''/ /opt/backup-ha-xivo/check_xivo.sh
+${PATH_SCP} ${PATH_SCRIPT}template.check_xivo.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/check_xivo.sh
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_MASTER=IP'/'IP_MASTER='$IP_MASTER''/ /etc/xivo_ha/check_xivo.sh
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_SLAVE=IP'/'IP_SLAVE='$IP_SLAVE''/ /etc/xivo_ha/check_xivo.sh
 sleep 0.5
 
-${PATCH_SCP} ${PATCH_SCRIPT}template.database.replicate.sh ${USER}@$IP_XIVO_SLAVE:/opt/backup-ha-xivo/database.replicate.sh
+${PATH_SCP} ${PATH_SCRIPT}template.database.replicate.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/database.replicate.sh
 sleep 0.5
 
-${PATCH_SCP} ${PATCH_SCRIPT}template.pidof_asterisk.sh ${USER}@$IP_XIVO_SLAVE:/opt/backup-ha-xivo/pidof_asterisk.sh
+${PATH_SCP} ${PATH_SCRIPT}template.pidof_asterisk.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/pidof_asterisk.sh
 sleep 0.5
 
-grep 'bash /opt/backup-ha-xivo/replication_cloud.sh' /etc/crontab
-if [[ $? == 1 ]];then echo '30 6 * * * root bash /opt/backup-ha-xivo/replication_cloud.sh' >> /etc/crontab; fi
+grep 'bash /etc/xivo_ha/replication_cloud.sh' /etc/crontab
+if [[ $? == 1 ]];then echo '30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh' >> /etc/crontab; fi
 sleep 0.5
 
-${PATCH_SSH} ${USER}@${IP_XIVO_SLAVE} "grep 'bash /opt/backup-ha-xivo/check_xivo.sh' /etc/crontab"
-if [[ $? == 1 ]];then ${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /opt/backup-ha-xivo/check_xivo.sh' >> /etc/crontab"; fi
+${PATH_SSH} ${USER}@${IP_XIVO_SLAVE} "grep 'bash /etc/xivo_ha/check_xivo.sh' /etc/crontab"
+if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/crontab"; fi
 sleep 0.5
 
-${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /opt/backup-ha-xivo/database.replicate.sh' /etc/crontab" 
-if [[ $? == 1 ]];then ${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /opt/backup-ha-xivo/database.replicate.sh' >> /etc/crontab"; fi
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /etc/xivo_ha/database.replicate.sh' /etc/crontab" 
+if [[ $? == 1 ]];then ${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/crontab"; fi
 sleep 0.5
 
 #${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /opt/backup-ha-xivo/pidof_asterisk.sh' /etc/crontab" 
@@ -125,7 +121,7 @@ sleep 0.5
 
 #${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "mv /etc/logrotate.d/xivo-backup /etc/logrotate.d/xivo-backup.old.script"
 sleep 0.5
-${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE " cat > /etc/logrotate.d/xivo-backup << EOF
+${PATH_SSH} ${USER}@$IP_XIVO_SLAVE " cat > /etc/logrotate.d/xivo-backup << EOF
 /var/backups/xivo/data-ha-xivo.tgz {
         daily
         rotate 7
@@ -146,26 +142,26 @@ sleep 0.5
 
 
 #================== Unset globals ==============================================
-unset PATCH_BASH
-unset PATCH_CP
-unset PATCH_LIBRARY
-unset PATCH_PING
-unset PATCH_MKDIR
+unset PATH_BASH
+unset PATH_CP
+unset PATH_LIBRARY
+unset PATH_PING
+unset PATH_MKDIR
 unset IP_XIVO_SLAVE
 unset ETAT_PING
 unset USER 
-unset PATCH_TMP
-unset PATCH_SSH
+unset PATH_TMP
+unset PATH_SSH
 unset NAME_SCRIPT
 unset ETAT_SSH
-unset PATCH_KEYGEN
-unset PATCH_SSH_COPY_ID
-unset PATCH_SCP
+unset PATH_KEYGEN
+unset PATH_SSH_COPY_ID
+unset PATH_SCP
 unset PORT_SSH
-unset PATCH_FOLDER_BACKUP
+unset PATH_FOLDER_BACKUP
 unset NAME_BACKUP
-unset PATCH_SCRIPT
-unset PATCH_EXPECT
+unset PATH_SCRIPT
+unset PATH_EXPECT
 
 
 println warn " \n\t#######################################################################"
