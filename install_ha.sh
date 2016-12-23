@@ -83,7 +83,7 @@ println info " \n\tL'installation de la réplication va démarrer"
 
 #[ ! -d /opt/backup-ha-xivo/ ] && ${PATH_MKDIR} -p /opt/backup-ha-xivo/
 [ ! -d /etc/xivo_ha/ ] && ${PATH_MKDIR} -p /etc/xivo_ha/
-[ ! -f /etc/cron.d/xivo_ha ] && touch /etc/cron.d/xivo_ha
+touch /etc/cron.d/xivo_ha
 
 ${PATH_CP} -v ${PATH_SCRIPT}template.replication_cloud.sh /etc/xivo_ha/replication_cloud.sh
 sed -iv s/'^IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"'/'IP_XIVO_SLAVE='"$IP_XIVO_SLAVE"''/ /etc/xivo_ha/replication_cloud.sh
