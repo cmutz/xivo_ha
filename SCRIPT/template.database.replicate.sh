@@ -1,7 +1,7 @@
 #!/bin/bash
 #########################################
 # Original script by Clément
-# # Copyright (c) 2013, Clément Mutz <c.mutz@whoople.fr>
+# # Copyright (c) 2016, Clément Mutz <c.mutz@whoople.fr>
 # #########################################
 # # Modified by Clément Mutz
 # # Contact at c.mutz@whoople.fr 
@@ -23,13 +23,15 @@ cp /etc/hostname /etc/hostname.script.ha
 
 #$PATCH_TAR -zcvf ${PATCH_FOLDER_BACKUP}data-ha.tgz etc/ usr/ var/
 #cp ${PATCH_FOLDER_BACKUP}data-`date '+%d%m%Y'`.tgz 
-$PATCH_TAR -zxvf ${PATCH_FOLDER_BACKUP}data-${NAME_BACKUP}.tgz -C /
+$PATCH_TAR -zxvf ${PATCH_FOLDER_BACKUP}data.tgz -C /
 
 
-$PATCH_TAR xvf ${PATCH_FOLDER_BACKUP}db-${NAME_BACKUP}.tgz -C ${PATCH_TMP}
+$PATCH_TAR xvf ${PATCH_FOLDER_BACKUP}db.tgz -C ${PATCH_TMP}
 cd ${PATCH_TMP}pg-backup
 sudo -u postgres dropdb asterisk
 sudo -u postgres pg_restore -C -d postgres asterisk-*.dump
+
+
 
 ######################################
 ### Plus valabe depuis la 15.19
@@ -48,6 +50,14 @@ sudo -u postgres pg_restore -C -d postgres asterisk-*.dump
 
 #$PATCH_TAR cvf ${PATCH_FOLDER_BACKUP}db-ha.tgz *
 ######################################
+
+#================== finalising backup =========================================
+
+xivo-update-keys
+
+source /etc/profile.d/xivo_uuid.sh
+systemctl set-environment XIVO_UUID=$XIVO_UUID
+systemctl daemon-reload
 
 
 #================== clean directory ===========================================
