@@ -7,10 +7,10 @@
 # # Contact at c.mutz@whoople.fr 
 
 #================== Globals ==================================================
-PATCH_TAR="/bin/tar"
-PATCH_TMP="/tmp/"
-PATCH_DATA="${PATCH_TMP}data_xivo"
-PATCH_FOLDER_BACKUP="/var/backups/xivo/"
+PATH_TAR="/bin/tar"
+PATH_TMP="/tmp/"
+PATH_DATA="${PATH_TMP}data_xivo"
+PATH_FOLDER_BACKUP="/var/backups/xivo/"
 NAME_BACKUP="ha-xivo"
 
 xivo-service stop;
@@ -23,11 +23,11 @@ cp /etc/hostname /etc/hostname.script.ha
 
 #$PATCH_TAR -zcvf ${PATCH_FOLDER_BACKUP}data-ha.tgz etc/ usr/ var/
 #cp ${PATCH_FOLDER_BACKUP}data-`date '+%d%m%Y'`.tgz 
-$PATCH_TAR -zxvf ${PATCH_FOLDER_BACKUP}data.tgz -C /
+$PATH_TAR -zxvf ${PATH_FOLDER_BACKUP}data.tgz -C /
 
 
-$PATCH_TAR xvf ${PATCH_FOLDER_BACKUP}db.tgz -C ${PATCH_TMP}
-cd ${PATCH_TMP}pg-backup
+$PATH_TAR xvf ${PATH_FOLDER_BACKUP}db.tgz -C ${PATH_TMP}
+cd ${PATH_TMP}pg-backup
 sudo -u postgres dropdb asterisk
 sudo -u postgres pg_restore -C -d postgres asterisk-*.dump
 
@@ -68,7 +68,7 @@ cp /etc/hostname.script.ha /etc/hostname
 #rm -rf /tmp/pg-backup
 
 #================== Unset globals =============================================
-unset PATCH_TAR
-unset PATCH_TMP
-unset PATCH_DATA
-unset PATCH_FOLDER_BACKUP
+unset PATH_TAR
+unset PATH_TMP
+unset PATH_DATA
+unset PATH_FOLDER_BACKUP
