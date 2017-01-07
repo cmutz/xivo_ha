@@ -6,12 +6,8 @@
 # # Modified by Clément Mutz
 # # Contact at c.mutz@whoople.fr 
 
-#================== Globals ==================================================
-PATH_RSYNC="/usr/bin/rsync"
-PATH_XIVO_BACKUP="/usr/sbin/xivo-backup"
-PATH_FOLDER_BACKUP="/var/backups/xivo/"
-PORT_SSH="22" # by default
-USER="root" # we use user root by default 
+#================== Globals ==============
+source global.sh
 
 IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"
 
@@ -19,11 +15,3 @@ IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"
 ${PATH_XIVO_BACKUP} db ${PATH_FOLDER_BACKUP}db
 ${PATH_XIVO_BACKUP} data ${PATH_FOLDER_BACKUP}data
 $PATH_RSYNC -av --rsh="ssh -p${PORT_SSH}" ${PATH_FOLDER_BACKUP} ${USER}@$IP_XIVO_SLAVE:${PATH_FOLDER_BACKUP}
-
-#================== Unset globals =============================================
-unset PATH_RSYNC
-unset PATCH_XIVO_BACKUP
-unset PATCH_FOLDER_BACKUP
-unset PORT_SSH
-unset NAME_BACKUP
-unset IP_XIVO_SLAVE
