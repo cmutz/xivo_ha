@@ -75,99 +75,43 @@ else
     fi
 fi
 sleep 0.5
+
 #===============================================================
 #================ Installation =================================
 #===============================================================
 println info " \n\tLa connection ssh des serveurs est assuré"
 println info " \n\tL'installation de la réplication va démarrer"
 
-#[ ! -d /opt/backup-ha-xivo/ ] && ${PATH_MKDIR} -p /opt/backup-ha-xivo/
 [ ! -d /etc/xivo_ha/ ] && ${PATH_MKDIR} -p /etc/xivo_ha/
 
 ${PATH_CP} -v ${PATH_SCRIPT}template.replication_cloud.sh /etc/xivo_ha/replication_cloud.sh
 sed -iv s/'^IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"'/'IP_XIVO_SLAVE='"$IP_XIVO_SLAVE"''/ /etc/xivo_ha/replication_cloud.sh
 sleep 0.5
 
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE ${PATH_MKDIR} -p /opt/backup-ha-xivo/
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE ${PATH_MKDIR} -p /etc/xivo_ha/
+${PATH_SSH} -p ${PORT_SSH} ${USER}@$IP_XIVO_SLAVE ${PATH_MKDIR} -p /opt/backup-ha-xivo/
+${PATH_SSH} -p ${PORT_SSH} ${USER}@$IP_XIVO_SLAVE ${PATH_MKDIR} -p /etc/xivo_ha/
 sleep 0.5
 
-${PATH_SCP} ${PATH_SCRIPT}template.check_xivo.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/check_xivo.sh
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_MASTER=IP'/'IP_MASTER='$IP_MASTER''/ /etc/xivo_ha/check_xivo.sh
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_SLAVE=IP'/'IP_SLAVE='$IP_SLAVE''/ /etc/xivo_ha/check_xivo.sh
+${PATH_SCP} -P ${PORT_SSH} ${PATH_SCRIPT}template.check_xivo.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/check_xivo.sh
+${PATH_SSH} -p ${PORT_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_MASTER=IP'/'IP_MASTER='$IP_MASTER''/ /etc/xivo_ha/check_xivo.sh
+${PATH_SSH} -p ${PORT_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_SLAVE=IP'/'IP_SLAVE='$IP_SLAVE''/ /etc/xivo_ha/check_xivo.sh
 sleep 0.5
 
-${PATH_SCP} ${PATH_SCRIPT}template.database.replicate.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/database.replicate.sh
+${PATH_SCP} -P ${PORT_SSH} ${PATH_SCRIPT}template.database.replicate.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/database.replicate.sh
 sleep 0.5
 
-${PATH_SCP} ${PATH_SCRIPT}template.pidof_asterisk.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/pidof_asterisk.sh
+${PATH_SCP} -P ${PORT_SSH} ${PATH_SCRIPT}template.pidof_asterisk.sh ${USER}@$IP_XIVO_SLAVE:/etc/xivo_ha/pidof_asterisk.sh
 sleep 0.5
 
-echo "30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh" >> /etc/cron.d/xivo_ha 
+echo "30 6 * * * root bash /etc/xivo_ha/replication_cloud.sh" >> /etc/cron.d/xivo_ha
 sleep 0.5
 
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/cron.d/xivo_ha"
+${PATH_SSH} -p ${PORT_SSH} ${USER}@$IP_XIVO_SLAVE "echo '*/5 * * * * root bash /etc/xivo_ha/check_xivo.sh' >> /etc/cron.d/xivo_ha"
 sleep 0.5
 
-${PATH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/cron.d/xivo_ha"
+${PATH_SSH} -p ${PORT_SSH} ${USER}@$IP_XIVO_SLAVE "echo '0 7 * * * root bash /etc/xivo_ha/database.replicate.sh' >> /etc/cron.d/xivo_ha"
 sleep 0.5
-
-#${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "grep 'bash /opt/backup-ha-xivo/pidof_asterisk.sh' /etc/crontab" 
-#if [[ $? == 1 ]];then ${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "echo '#*/3 * * * * root bash /opt/backup-ha-xivo/pidof_asterisk.sh' >> /etc/crontab"; fi
-#${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE sed -iv s/'^IP_SLAVE=IP'/'IP_SLAVE='$IP_SLAVE''/ /opt/backup-ha-xivo/pidof_asterisk.sh
-#sleep 0.5
-
-#${PATCH_SSH} ${USER}@$IP_XIVO_SLAVE "mv /etc/logrotate.d/xivo-backup /etc/logrotate.d/xivo-backup.old.script"
-#sleep 0.5
-#${PATH_SSH} ${USER}@$IP_XIVO_SLAVE " cat > /etc/logrotate.d/xivo-backup << EOF
-#/var/backups/xivo/data-ha-xivo.tgz {
-#        daily
-#        rotate 7
-#        nocompress
-#        create 640 root www-data
-#        nocreate
-#}
-#/var/backups/xivo/db-ha-xivo.tgz {
-#    daily
-#        rotate 7
-#        nocompress
-#        create 640 root www-data
-#        nocreate
-#}
-#EOF
-#"
-sleep 0.5
-
-
-#================== Unset globals ==============================================
-unset PATH_BASH
-unset PATH_CP
-unset PATH_LIBRARY
-unset PATH_PING
-unset PATH_MKDIR
-unset IP_XIVO_SLAVE
-unset ETAT_PING
-unset USER 
-unset PATH_TMP
-unset PATH_SSH
-unset NAME_SCRIPT
-unset ETAT_SSH
-unset PATH_KEYGEN
-unset PATH_SSH_COPY_ID
-unset PATH_SCP
-unset PORT_SSH
-unset PATH_FOLDER_BACKUP
-unset NAME_BACKUP
-unset PATH_SCRIPT
-unset PATH_EXPECT
-
 
 println warn " \n\t#######################################################################"
 println warn " \n\t###################### INSTALLATION TERMINE ###########################"
-#println warn " \n\t######## Veuillez remplacer sur le serveur cloud ######################"
-#println warn " \n\t######## le fichier /etc/logrotate.d/xivo-backup ######################"
-#println warn " \n\t######## les lignes var/backups/xivo/data-(date du jour).tgz ET #######"
-#println warn " \n\t######## var/backups/xivo/db-(date du jour).tgz PAR ###################"
-#println warn " \n\t######## var/backups/xivo/data-\`date '+%d%m%Y'\`.tgz ET ################"
-#println warn " \n\t######## var/backups/xivo/db-\`date '+%d%m%Y'\`.tgz #####################"
 println warn " \n\t#######################################################################\n"
