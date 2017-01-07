@@ -8,7 +8,7 @@
 
 #================== Globals ==================================================
 PATH_RSYNC="/usr/bin/rsync"
-PATCH_XIVO_BACKUP="/usr/sbin/xivo-backup"
+PATH_XIVO_BACKUP="/usr/sbin/xivo-backup"
 PATH_FOLDER_BACKUP="/var/backups/xivo/"
 PORT_SSH="22" # by default
 USER="root" # we use user root by default 
@@ -16,8 +16,8 @@ USER="root" # we use user root by default
 IP_XIVO_SLAVE="IP-ADDRESS-VALIDE"
 
 #================ Main =========================================
-$PATH_XIVO_BACKUP db ${PATCH_FOLDER_BACKUP}db
-$PATH_XIVO_BACKUP data ${PATCH_FOLDER_BACKUP}data
+${PATH_XIVO_BACKUP} db ${PATH_FOLDER_BACKUP}db
+${PATH_XIVO_BACKUP} data ${PATH_FOLDER_BACKUP}data
 $PATH_RSYNC -av --rsh="ssh -p${PORT_SSH}" ${PATH_FOLDER_BACKUP} ${USER}@$IP_XIVO_SLAVE:${PATH_FOLDER_BACKUP}
 
 #================== Unset globals =============================================
