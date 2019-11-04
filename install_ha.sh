@@ -1,4 +1,4 @@
-o#!/bin/bash
+#!/bin/bash
 #########################################
 # Original script by Clément
 # # Copyright (c) 2016, Clément Mutz <c.mutz@whoople.fr>
